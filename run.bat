@@ -1,0 +1,1 @@
+./compile.bat; clear; node .\fuzzer.js .\fuzzee.js
