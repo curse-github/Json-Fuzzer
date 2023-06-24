@@ -1,62 +1,33 @@
 "use strict";
 exports.__esModule = true;
-exports.fuzz = void 0;
 var temp = {
     test1: "string",
-    test2: "number",
-    test3: [
+    test2: "integer",
+    test3: "number",
+    test4: { type: "range", max: 250, min: -250, isfloat: true },
+    test5: { type: "enum", values: ["string1", "string2", "string3", "string4", "string5"] },
+    test6: [
         "string",
         "number",
-        [
-            "string",
-            "number",
-            [
-                "string",
-                "number"
-            ]
-        ],
-        {
-            test4: "string",
-            test5: "number",
-            test6: [
-                "string",
-                "number"
-            ]
-        }
+        { type: "range", max: 0, min: 100 },
     ],
     test7: {
         test8: "string",
-        test9: "number",
+        test9: { type: "enum", values: [5, 10, 15, 20, 25] },
         test10: [
             "string",
+            "integer",
             "number",
-            [
-                "string",
-                "number"
-            ],
-            {
-                test11: "string",
-                test12: "number"
-            }
-        ],
-        test13: {
-            test14: "string",
-            test15: "number",
-            test16: [
-                "string",
-                "number",
-                {
-                    test17: "string",
-                    test18: "number"
-                }
-            ]
-        }
+            { type: "range", max: 0, min: 100 },
+            { type: "range", max: 250, min: -250, isfloat: true },
+            { type: "enum", values: ["string1", "string2", "string3", "string4", "string5"] },
+            { type: "enum", values: [5, 10, 15, 20, 25] }
+        ]
     }
 };
 function fuzz(json) {
-    console.log(JSON.stringify(json, null, 4));
+    console.log(JSON.stringify(json));
 }
-exports.fuzz = fuzz;
 module.exports = {
     "fuzz": fuzz, "template": temp
 };
