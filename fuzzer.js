@@ -109,6 +109,7 @@ var fs = require("fs");
 //#endregion imports/typedefs
 //#region config
 var config = JSON.parse(fs.readFileSync("config.json").toString());
+//get out file config options
 var outFile = config.outFile;
 if (outFile != null && (typeof outFile) != "string")
     outFile = null;
@@ -137,6 +138,11 @@ if (outFile != null) {
         });
     };
 }
+//get verbosity config options
+var verbose = config.verbose;
+if ((typeof verbose) != "boolean")
+    verbose = true;
+//get char set config options
 var charSet;
 if ((typeof config.charSet) != "string") {
     charSet = [];
@@ -146,6 +152,7 @@ if ((typeof config.charSet) != "string") {
 }
 else
     charSet = config.charSet.split("");
+//get string length config options
 var minStrLen = config.minStrLen;
 var maxStrLen = config.maxStrLen;
 if ((typeof minStrLen) != "number") {
@@ -169,6 +176,7 @@ if (maxStrLen < minStrLen) {
     console.log(Colors.Fgra + "invalid config." + Colors.Fr + "maxStrLen" + Colors.Fgra + "." + Colors.R);
 }
 var StrLenRange = maxStrLen - minStrLen;
+//get integer ocnfig options
 var minInteger;
 if ((typeof config.minInteger) != "number") {
     minInteger = 0;
@@ -179,13 +187,14 @@ else {
 }
 var maxInteger;
 if ((typeof config.maxInteger) != "number") {
-    maxInteger = 0;
+    maxInteger = minInteger;
     console.log(Colors.Fgra + "invalid config." + Colors.Fr + "maxNumber" + Colors.Fgra + "." + Colors.R);
 }
 else {
     maxInteger = config.maxInteger;
 }
 var integerRange = maxInteger - minInteger;
+//get float ocnfig options
 var minFloat;
 if ((typeof config.minFloat) != "number") {
     minFloat = 0;
@@ -196,7 +205,7 @@ else {
 }
 var maxFloat;
 if ((typeof config.maxFloat) != "number") {
-    maxFloat = 0;
+    maxFloat = minFloat;
     console.log(Colors.Fgra + "invalid config." + Colors.Fr + "maxFloat" + Colors.Fgra + "." + Colors.R);
 }
 else {
@@ -204,6 +213,11 @@ else {
 }
 var floatRange = maxFloat - minFloat;
 //#endregion config
+/**
+ * returns random value of the correct type based on the template
+ * @param {template} temp template object
+ * @returns {nullableObj}
+ */
 function random(temp) {
     if (temp == "string")
         return randomString();
@@ -234,17 +248,34 @@ function random(temp) {
     }
 }
 exports.random = random;
+/**
+ * returns random float in range defined in the config
+ * @returns {number}
+ */
 function randomNumber() {
     return Math.round((minFloat + Math.random() * floatRange) * 1000) / 1000;
 }
+/**
+ * returns random integer in range defined in the config
+ * @returns {number}
+ */
 function randomInteger() {
     return Math.round((minInteger + Math.random() * integerRange));
 }
+/**
+ * returns random character from a charater set defined in the config
+ * @returns {string}
+ */
 function randomChar() {
     return charSet[Math.round(Math.random() * (charSet.length - 1))];
     //return String.fromCharCode((0x23+Math.ceil(Math.random()*(0x7E-0x23))));
     //return String.fromCharCode(Math.floor(Math.random() * 0xffff));
 }
+/**
+ * returns random string with a random length defined in the config
+ * and from a charater set defined in the config
+ * @returns {string}
+ */
 function randomString() {
     var len = minStrLen + Math.ceil(Math.random() * StrLenRange);
     var str = "";
@@ -252,9 +283,39 @@ function randomString() {
         str += randomChar();
     return str;
 }
+/**
+ * returns random true or false value
+ * @returns {boolean}
+ */
 function randomBoolean() {
     return Math.round(Math.random()) == 1;
 }
+/**
+ * converts a "range" object to a random value in its range
+ * can be an integer range or float
+ * template: {type:"range",max:number,min:number,isfloat?:boolean}
+ * @param {{type:"range",max:number,min:number,isfloat?:boolean}} temp template object
+ * @returns {number}
+ */
+function randomRange(temp) {
+    return (temp.isfloat == true) ? (temp.min + Math.random() * (temp.max - temp.min)) : Math.round(temp.min + Math.random() * (temp.max - temp.min));
+}
+/**
+ * converts a "enum" object to a random value from its set of values
+ * template: {type:"enum",values:(string|number|boolean)[]}
+ * @param {{type:"enum",values:(string|number|boolean)[]}} temp template object
+ * @returns {string|number|boolean}
+ */
+function randomEnum(temp) {
+    var vals = temp.values;
+    return vals[Math.round(Math.random() * (vals.length - 1))];
+}
+/**
+ * converts each value of the array as a template
+ * to a random value of the correct type
+ * @param {template[]} temp template array
+ * @returns {nullableObj[]}
+ */
 function randomArray(temp) {
     var newArry = [];
     for (var i = 0; i < temp.length; i++) {
@@ -265,13 +326,12 @@ function randomArray(temp) {
     }
     return newArry;
 }
-function randomRange(temp) {
-    return (temp.isfloat == true) ? (temp.min + Math.random() * (temp.max - temp.min)) : Math.round(temp.min + Math.random() * (temp.max - temp.min));
-}
-function randomEnum(temp) {
-    var vals = temp.values;
-    return vals[Math.round(Math.random() * (vals.length - 1))];
-}
+/**
+ * converts each value of the object as a template
+ * to a random value of the correct type
+ * @param {{[key:string]:template}} temp template object
+ * @returns {{[key:string]:nullableObj}}
+ */
 function randomObject(temp) {
     var newObj = {};
     var keys = Object.keys(temp);
@@ -285,6 +345,12 @@ function randomObject(temp) {
     return newObj;
 }
 var changes = [];
+/**
+ * finds changes that could potentially break the target based on the json template
+ * and saves them to the "changes" array with indexes and value
+ * @param {template} temp
+ * @param {(string|number)[]} indexes
+ */
 function processTemplate(temp, indexes) {
     if (temp == "string") {
         changes.push([__spreadArray([], indexes, true), null]);
@@ -371,10 +437,16 @@ function processTemplate(temp, indexes) {
             return;
         }
     }
-    else {
-        return null;
-    }
+    else
+        return;
 }
+/**
+ * checks if two objects are equal without just converting them to json
+ * end up being slightly faster than convertingto json
+ * @param {nullableObj} a object 1
+ * @param {nullableObj} b object 2
+ * @returns {boolean}
+ */
 function objectEqual(a, b) {
     if ((a === undefined && b === null) || (a === null && b === undefined))
         return true; // if one is null and the other is undefined the folowing will return false but they are equal;
@@ -392,7 +464,7 @@ function objectEqual(a, b) {
         var entriesB = Object.entries(b);
         if (entriesA.length != entriesB.length)
             return false;
-        for (var i = 0; i < entriesA.length; i++) {
+        for (var i = 0; i < entriesA.length; i++) { //check that each key and value of the object are equal
             if (!objectEqual(entriesA[i][0], entriesB[i][0]))
                 return false;
             if (!objectEqual(entriesA[i][1], entriesB[i][1]))
@@ -401,13 +473,11 @@ function objectEqual(a, b) {
     }
     return true;
 }
-/*function msToString(ms:number):string {
-    if (ms>1000*60*60*24) return (ms/(1000*60*60*24)).toFixed(3)+" days";
-    else if (ms>1000*60*60) return (ms/(1000*60*60)).toFixed(3)+" hrs";
-    else if (ms>1000*60) return (ms/(1000*60)).toFixed(3)+" mins";
-    else if (ms>1000) return (ms/(1000)).toFixed(3)+" s";
-    else return ms+" ms";
-}*/
+/**
+ * generates string for time formatted with color, units, and 3 decimal places
+ * @param {number} ms milliseconds
+ * @returns {string}
+ */
 function msToStringColor(ms) {
     if (ms > 1000 * 60 * 60 * 24)
         return Colors.Fy + (ms / (1000 * 60 * 60 * 24)).toFixed(3).padStart(6, "0") + Colors.Fgra + " days" + Colors.R;
@@ -420,24 +490,33 @@ function msToStringColor(ms) {
     else
         return Colors.Fy + ms.toString().padStart(6, "0") + Colors.Fgra + " ms" + Colors.R;
 }
-/*function ratioToPercentage(a:number,b:number) {
-    return (a/b*100).toFixed(3).padStart(7,"0")+" %";
-}*/
+/**
+ * return a/b as a percentage formatted with color, a percentage sign, and 3 decimal places
+ * @param {number} a numerator
+ * @param {number} b denominator
+ * @returns {string}
+ */
 function ratioToPercentageColor(a, b) {
     return Colors.Fy + (a / b * 100).toFixed(3).padStart(7, "0") + Colors.Fgra + " %" + Colors.R;
 }
+/**
+ * create list of "tests" which is a list of every combination of invalid json objects
+ *
+ * @returns {nullableObj[]}
+ */
 function createTests() {
     //creates possible changes
-    var proccessingTime = (new Date()).getTime();
     processTemplate(temp, []);
-    proccessingTime = (new Date()).getTime() - proccessingTime;
     var tests = [];
     var skips = 0;
     var generationTime = (new Date()).getTime();
     for (var i = 0; i < changes.length; i++) {
         var change1 = changes[i];
-        console.log(ratioToPercentageColor(i * changes.length, changes.length * (changes.length + 1)));
-        console.log(Colors.Fgra + "Time elapsed: " + msToStringColor((new Date()).getTime() - generationTime) + Colors.Fgra + ".\n" + Colors.R);
+        //print percentage and time elapsed
+        if (verbose) {
+            console.log(ratioToPercentageColor(i * changes.length, changes.length * (changes.length + 1)));
+            console.log(Colors.Fgra + "Time elapsed: " + msToStringColor((new Date()).getTime() - generationTime) + Colors.Fgra + ".\n" + Colors.R);
+        }
         for (var j = i + 1; j < changes.length; j++) {
             var change2 = changes[j];
             //pass if they are equal, and fail if change1 is modifying the parent of change2
@@ -446,7 +525,8 @@ function createTests() {
                 if (change1[0][i_1] != change2[0][i_1] && change1[0][i_1] != null)
                     modifyingParent = false;
             }
-            if (modifyingParent && !objectEqual(change1, change2)) {
+            var areEqual = objectEqual(change1, change2);
+            if (modifyingParent && !areEqual) {
                 skips++;
                 continue;
             }
@@ -455,6 +535,7 @@ function createTests() {
             if (change1[0].length == 0)
                 rand = change1[1];
             else {
+                //search through indexes of rand object to find the on to be modified
                 var thing = rand;
                 for (var j_1 = 0; j_1 < change1[0].length - 1; j_1++) {
                     thing = thing[change1[0][j_1]];
@@ -462,19 +543,21 @@ function createTests() {
                 thing[change1[0][change1[0].length - 1]] = change1[1];
             }
             //change2
-            try {
-                if (change1[0].length == 0)
-                    rand = change2[1];
-                else {
-                    var thing = rand;
-                    for (var j_2 = 0; j_2 < change2[0].length - 1; j_2++) {
-                        thing = thing[change2[0][j_2]];
+            if (!areEqual) { //dont bother with change2 if change1 and 2 are equal
+                try {
+                    if (change1[0].length == 0)
+                        rand = change2[1];
+                    else {
+                        var thing = rand;
+                        for (var j_2 = 0; j_2 < change2[0].length - 1; j_2++) {
+                            thing = thing[change2[0][j_2]];
+                        }
+                        thing[change2[0][change2[0].length - 1]] = change2[1];
                     }
-                    thing[change2[0][change2[0].length - 1]] = change2[1];
                 }
-            }
-            catch (err) {
-                continue;
+                catch (err) {
+                    continue;
+                }
             }
             //check for duplicate entries
             var isDupe = false;
@@ -489,13 +572,15 @@ function createTests() {
         }
     }
     generationTime = (new Date()).getTime() - generationTime;
-    console.log("\n");
-    console.log(Colors.Fgra + "Processing time: " + msToStringColor(proccessingTime) + Colors.Fgra + "." + Colors.R);
-    console.log(Colors.Fgra + "Generation time: " + msToStringColor(generationTime) + Colors.Fgra + "." + Colors.R);
-    console.log(Colors.Fy + tests.length + Colors.Fgra + " tests found." + Colors.R);
-    console.log(Colors.Fy + skips + Colors.Fgra + " skips." + Colors.R);
+    if (verbose) {
+        console.log("\n");
+        console.log(Colors.Fgra + "Generation time: " + msToStringColor(generationTime) + Colors.Fgra + "." + Colors.R);
+        console.log(Colors.Fy + tests.length + Colors.Fgra + " tests found." + Colors.R);
+        console.log(Colors.Fy + skips + Colors.Fgra + " skips." + Colors.R);
+    }
     return tests;
 }
+//create the tests and runs them in the "fuzz" function
 function run() {
     return __awaiter(this, void 0, void 0, function () {
         var tests, i;
@@ -503,12 +588,12 @@ function run() {
             switch (_a.label) {
                 case 0:
                     tests = createTests();
-                    console.log(tests.length);
                     i = 0;
                     _a.label = 1;
                 case 1:
                     if (!(i < tests.length)) return [3 /*break*/, 4];
-                    console.log((i + 1) + "/" + tests.length);
+                    if (verbose)
+                        console.log((i + 1) + "/" + tests.length);
                     return [4 /*yield*/, fuzz(tests[i], i == (tests.length - 1))];
                 case 2:
                     _a.sent();
@@ -517,7 +602,8 @@ function run() {
                     i++;
                     return [3 /*break*/, 1];
                 case 4:
-                    console.log("Ran final test.");
+                    if (verbose)
+                        console.log("Ran final test.");
                     return [2 /*return*/];
             }
         });
