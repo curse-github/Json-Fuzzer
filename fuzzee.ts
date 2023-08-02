@@ -1,4 +1,4 @@
-import {obj,template,random} from "./fuzzer"
+import {obj,template} from "./fuzzer"
 const temp:template = [
     "number",//float
     "number",
@@ -32,6 +32,4 @@ const temp:template = [
 function fuzz(json:obj) {
     console.log(JSON.stringify(json))
 }
-module.exports = {
-    "fuzz":fuzz,"template":temp
-}
+module.exports = {fuzz,temp}
