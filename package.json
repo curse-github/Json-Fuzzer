@@ -1,7 +1,7 @@
 {
   "name": "json-fuzzer",
   "version": "1.1.0",
-  "description": "",
+  "description": "A \"fuzzer\" in a json format that imports a typescript file and uses the \"fuzz\" function",
   "main": "fuzzer.ts",
   "scripts": {
     "test": "ts-node fuzzer.ts ./fuzzee.ts"

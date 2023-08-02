@@ -1,3 +1,5 @@
+A \"fuzzer\" in a json format that imports a typescript file and uses the \"fuzz\" function
+
 # [Usage](#usage)
 `ts-node .\fuzzer.ts [fuzzee file]`
 ```
