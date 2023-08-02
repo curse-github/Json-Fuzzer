@@ -1,5 +1,6 @@
 {
     "outFile":"out.txt",
+    "verbose":true,
     "charSet":"!\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~",
     "minStrLen":5,
     "maxStrLen":25,
