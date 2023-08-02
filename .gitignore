@@ -1,0 +1,6 @@
+node_modules
+out.txt
+
+#for my personal code
+runTest.bat
+fuzzeeTest.ts

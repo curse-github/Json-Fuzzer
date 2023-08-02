@@ -1,0 +1,10 @@
+{
+    "outFile":"out.txt",
+    "charSet":"!\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~",
+    "minStrLen":5,
+    "maxStrLen":25,
+    "minInteger":-2147483647,
+    "maxInteger":2147483647,
+    "minFloat":-2147483647,
+    "maxFloat":2147483647
+}

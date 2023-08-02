@@ -1,29 +1,34 @@
-import {obj,template} from "./fuzzer"
-const temp:template = {
-    test1:"string",
-    test2:"integer",
-    test3:"number",
-    test4:{type:"range",max:250,min:-250,isfloat:true},
-    test5:{type:"enum",values:["string1","string2","string3","string4","string5"]},
-    test6:[
-        "string",
+import {obj,template,random} from "./fuzzer"
+const temp:template = [
+    "number",//float
+    "number",
+    "integer",
+    "integer",
+    "string",
+    "string",
+    "boolean",
+    "boolean",
+    {type:"enum",values:[0,5,10,15]},//number enum
+    {type:"enum",values:[0,5,10,15]},
+    {type:"enum",values:["ab","cd","ef","gh"]},//string enum
+    {type:"enum",values:["ab","cd","ef","gh"]},
+    {type:"enum",values:[1,2,"a","b"]},
+    {type:"enum",values:[1,2,"a","b"]},
+    {type:"range",min:0,max:25,isfloat:false},//integer range
+    {type:"range",min:0,max:25,isfloat:false},
+    {type:"range",min:0,max:25,isfloat:true},//float range
+    {type:"range",min:0,max:25,isfloat:true},
+    [
         "number",
-        {type:"range",max:0,min:100},
+        "string",
+        "boolean"
     ],
-    test7:{
-        test8:"string",
-        test9:{type:"enum",values:[5,10,15,20,25]},
-        test10:[
-            "string",
-            "integer",
-            "number",
-            {type:"range",max:0,min:100},
-            {type:"range",max:250,min:-250,isfloat:true},
-            {type:"enum",values:["string1","string2","string3","string4","string5"]},
-            {type:"enum",values:[5,10,15,20,25]}
-        ] 
+    {
+        "key1":"number",
+        "key2":"string",
+        "key3":"boolean"
     }
-}
+]
 function fuzz(json:obj) {
     console.log(JSON.stringify(json))
 }
