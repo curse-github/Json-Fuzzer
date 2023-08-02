@@ -13,7 +13,7 @@ A \"fuzzer\" in a json format that imports a typescript file and uses the \"fuzz
 |integer |`"integer"` |"integer" |random integer in the range defined in the config |
 |boolean |`"boolean"` |"boolean" |random `true` or `false` value |
 |range |{<br>&nbsp;&nbsp;&nbsp;&nbsp;type:"range",<br>&nbsp;&nbsp;&nbsp;&nbsp;max:number,<br>&nbsp;&nbsp;&nbsp;&nbsp;min:number,<br>&nbsp;&nbsp;&nbsp;&nbsp;isfloat?:boolean<br>}|{<br>&nbsp;&nbsp;&nbsp;&nbsp;"type":"range",<br>&nbsp;&nbsp;&nbsp;&nbsp;"max":50,<br>&nbsp;&nbsp;&nbsp;&nbsp;"min":0,<br>&nbsp;&nbsp;&nbsp;&nbsp;"isfloat":false<br>}|random value within `min` and `max` values, either an integer or float |
-|enum |{<br>&nbsp;&nbsp;&nbsp;&nbsp;type:"enum",<br>&nbsp;&nbsp;&nbsp;&nbsp;values:(string\|number\|bool)[]<br>} |{<br>&nbsp;&nbsp;&nbsp;&nbsp;"type":"enum",<br>&nbsp;&nbsp;&nbsp;&nbsp;"values":["string",50,true]<br>} |random value from the `values` array |
+|enum |{<br>&nbsp;&nbsp;&nbsp;&nbsp;type:"enum",<br>&nbsp;&nbsp;&nbsp;&nbsp;values:(string\|number\|boolean)[]<br>} |{<br>&nbsp;&nbsp;&nbsp;&nbsp;"type":"enum",<br>&nbsp;&nbsp;&nbsp;&nbsp;"values":["string",50,true]<br>} |random value from the `values` array |
 |array |template[] |[<br>&nbsp;&nbsp;&nbsp;&nbsp;"string",<br>&nbsp;&nbsp;&nbsp;&nbsp;"number",<br>&nbsp;&nbsp;&nbsp;&nbsp;"integer",<br>&nbsp;&nbsp;&nbsp;&nbsp;"boolean"<br>] |array filled with random values based on the templates inside |
 |object |{<br>&nbsp;&nbsp;&nbsp;&nbsp;[keys:string]:template<br>} |{<br>&nbsp;&nbsp;&nbsp;&nbsp;"key1":"string",<br>&nbsp;&nbsp;&nbsp;&nbsp;"key1":"string",<br>&nbsp;&nbsp;&nbsp;&nbsp;"key1":"string"<br>}|object filled with random values based on the templates inside |
 # [Fuzzee code](#fuzzeeCode)
